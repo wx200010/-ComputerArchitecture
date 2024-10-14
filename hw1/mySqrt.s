@@ -7,28 +7,28 @@
     str3:     .string "\nmySqrt(0x7FFFFFFF) is "  
 .text
 main:
-        la a0, str1              # print "result1 is  " 
+        la a0, str1                
         li a7, 4
         ecall
         lw  a0, test_1           
         jal ra, mySqrt           # result1 = mySqrt(0x4)      
-        li a7, 1                 # print result1
+        li a7, 1                 # printf("mySqrt(4) is %u", result1);
         ecall
         
-        la a0, str2              # print "result2 is  " 
+        la a0, str2              
         li a7, 4
         ecall
         lw  a0, test_2           
         jal ra, mySqrt           # result2 = mySqrt(0x8)      
-        li a7, 1                 # print result2
+        li a7, 1                 # printf("mySqrt(8) is %u", result2);
         ecall
 
-        la a0, str3              # print "result3 is  " 
+        la a0, str3              
         li a7, 4
         ecall
         lw  a0, test_3           
         jal ra, mySqrt           # result3 = mySqrt(0x7FFFFFFF)      
-        li a7, 1                 # print result3
+        li a7, 1                 # printf("mySqrt(0x7FFFFFFF) is %u", result3);
         ecall
     
         # Exit the program
@@ -41,10 +41,7 @@ mySqrt:
         # t1 is L
         # t2 is R
         # t3 is M
-                                   
-        li t0, 0xFFFFFFFE          # check if(x==0 || x==1) then return
-        and t0, a0, t0             # temp = x & 0xFFFFFFFE
-        bnez t0, conditionSkip     # if temp == 0 then return x
+        bnez a0, conditionSkip     # if(x==0) then return x
         ret
 conditionSkip:
         mv t3, a0                  # set t3 = x to calc my_clz(x)

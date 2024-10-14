@@ -21,7 +21,7 @@ uint32_t my_clz(uint32_t x)
 
 int mySqrt(unsigned x)
 {
-  if (x == 0 || x == 1)
+  if (x == 0)
     return x;
 
   uint32_t temp, L, R, M;
@@ -32,14 +32,14 @@ int mySqrt(unsigned x)
 
   while (1)
   {
-    uint32_t M = (L + R) >> 1;
+    M = (L + R) >> 1;
     // printf("L, M, R = %d, %d, %d\n", L, M, R);
     if (M * M > x)
       R = M;
-    else if ((M + 1) * (M + 1) < x) // same as M*M + 2*M + 1
+    else if ((M + 1) * (M + 1) <= x) // can do M*M + 2*M + 1 in assembly
       L = M;
     else
-      return M;
+      return M; // return M when M*M <= x < (M+1)*(M+1)
   }
 }
 int main()
@@ -50,7 +50,7 @@ int main()
   uint32_t result1 = mySqrt(input1);
   uint32_t result2 = mySqrt(input2);
   uint32_t result3 = mySqrt(input3);
-  printf("\nmySqrt(4) is : %d ", result1);
-  printf("\nmySqrt(8) is : %d ", result2);
-  printf("\nmySqrt(0x7FFFFFFF) is : %d ", result3);
+  printf("\nmySqrt(4) is : %u", result1);
+  printf("\nmySqrt(8) is : %u", result2);
+  printf("\nmySqrt(0x7FFFFFFF) is : %u", result3);
 }
