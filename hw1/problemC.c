@@ -45,5 +45,5 @@ int main()
   uint32_t result3 = fp16_to_fp32(input3);
   printf("\nresult1 is : %d ", result1);
   printf("\nresult2 is : %d ", result2);
-  printf("\nresult3 is : %x ", result3);
+  printf("\nresult3 is : %d ", result3);
 }
