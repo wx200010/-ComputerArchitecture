@@ -1,40 +1,49 @@
 .data
-    test_1: .word 0xFFFF
-    test_2: .word 0x0710
-    test_3: .word 0x80F3        
-    str1:     .string "\nresult1 is  " 
-    str2:     .string "\nresult2 is  " 
-    str3:     .string "\nresult3 is  "  
+    datas: .word 0x0710, 0x311F, 0x000F, 0x0000, 0x8000, 0x7C00, 0xFC00, 0x7CFF
+    ans: .word 0x38e20000, 0x3e23e000, 0x35700000, 0x0, 0x80000000, 0x7f800000, 0xff800000, 0x7f9fe000
+    str1:     .string "\nfp16_to_fp32(0x0710) is : " 
+    str2:     .string "\nfp16_to_fp32(0x311F) is : " 
+    str3:     .string "\nfp16_to_fp32(0x000F) is : " 
+    str4:     .string "\nfp16_to_fp32(0x0000) is : " 
+    str5:     .string "\nfp16_to_fp32(0x8000) is : " 
+    str6:     .string "\nfp16_to_fp32(0x7C00) is : " 
+    str7:     .string "\nfp16_to_fp32(0xFC00) is : " 
+    str8:     .string "\nfp16_to_fp32(0x7CFF) is : " 
+    strError: .string "\nthe answer is wrong!!!"
+    strs:     .word str1, str2, str3, str4, str5, str6, str7, str8
 .text
 main:
-        la a0, str1                # print "result1 is  " 
-        li a7, 4
+        la s6, ans                 # Load ans reference
+        la s7, datas               # Load datas reference
+        la s8, strs                # Load strs references
+        li s9, 8                   # Load the loop count
+print_numbers:
+        lw a0, 0(s8)               # Load string reference
+        li a7, 4                   # print string
         ecall
-        lw  a0, test_1           
-        jal ra, fp16_to_fp32       # result1 = fp16_to_fp32(0x0710)      
-        li a7, 1                   # print result1
+        lw a0, 0(s7)               # Load data
+        jal ra, fp16_to_fp32       # calculate fp16_to_fp32(data)   
+        li, a7, 34                  # print the result in hex format
         ecall
-    
-        la a0, str2                # print "result2 is  " 
-        li a7, 4
+validation:
+        lw t0, 0(s6)               # Load ans
+        sub t0, t0, a0             # calculate ans - result for validation
+        beqz t0, check_loop        # if (ans - result) == 0 then skip
+        la a0, strError
+        li a7, 4                   # print error message!!!
         ecall
-        lw  a0, test_2           
-        jal ra, fp16_to_fp32       # result2 = fp16_to_fp32(0x0710)      
-        li a7, 1                   # print result2
-        ecall
+check_loop:
+        addi s6, s6, 4             # shift ans index
+        addi s7, s7, 4             # shift datas index
+        addi s8, s8, 4             # shift strs index
+        addi s9, s9, -1            # loop count - 1
+        bnez s9, print_numbers
         
-        la a0, str3                # print "result3 is  " 
-        li a7, 4
-        ecall
-        lw  a0, test_3           
-        jal ra, fp16_to_fp32       # result3 = fp16_to_fp32(0x80F3)      
-        li a7, 1                   # print result3
-        ecall
-        
+exit:
         # Exit the program
         li a7, 10                  # System call code for exiting the program
         ecall                      # Make the exit system call
-        
+        ret
 fp16_to_fp32:
         # a0 is h
         # t0 is w

@@ -44,13 +44,15 @@ int mySqrt(unsigned x)
 }
 int main()
 {
-  uint32_t input1 = 4;
-  uint32_t input2 = 8;
-  uint32_t input3 = 0x7FFFFFFF;
-  uint32_t result1 = mySqrt(input1);
-  uint32_t result2 = mySqrt(input2);
-  uint32_t result3 = mySqrt(input3);
-  printf("\nmySqrt(4) is : %u", result1);
-  printf("\nmySqrt(8) is : %u", result2);
-  printf("\nmySqrt(0x7FFFFFFF) is : %u", result3);
+  uint32_t datas[] = {0, 1, 2, 4, 8, 2147483647};
+  uint32_t results[] = {
+      mySqrt(datas[0]),
+      mySqrt(datas[1]),
+      mySqrt(datas[2]),
+      mySqrt(datas[3]),
+      mySqrt(datas[4]),
+      mySqrt(datas[5])};
+
+  for (int i = 0; i < 6; ++i)
+    printf("\nmySqrt(%u) is : %u", datas[i], results[i]);
 }

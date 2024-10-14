@@ -37,13 +37,32 @@ static inline uint32_t fp16_to_fp32(uint16_t h)
 
 int main()
 {
-  uint32_t input1 = 0xFFFF;
-  uint32_t input2 = 0x0710;
-  uint32_t input3 = 0x80F3;
-  uint32_t result1 = fp16_to_fp32(input1);
-  uint32_t result2 = fp16_to_fp32(input2);
-  uint32_t result3 = fp16_to_fp32(input3);
-  printf("\nresult1 is : %d ", result1);
-  printf("\nresult2 is : %d ", result2);
-  printf("\nresult3 is : %d ", result3);
+  uint32_t datas[] = {
+      0x0710, // normalized number
+      0x311F, // normalized number
+      0x000F, // denormalized number
+      0x0000, // positive zero
+      0x8000, // negative zero
+      0x7C00, // positive inf
+      0xFC00, // negative inf
+      0x7CFF  // NaN
+  };
+  uint32_t results[] = {
+      fp16_to_fp32(datas[0]),
+      fp16_to_fp32(datas[1]),
+      fp16_to_fp32(datas[2]),
+      fp16_to_fp32(datas[3]),
+      fp16_to_fp32(datas[4]),
+      fp16_to_fp32(datas[5]),
+      fp16_to_fp32(datas[6]),
+      fp16_to_fp32(datas[7])};
+
+  printf("\nfp16_to_fp32(0x0710) is : 0x%x ", results[0]); // normalized number
+  printf("\nfp16_to_fp32(0x311F) is : 0x%x ", results[1]); // normalized number
+  printf("\nfp16_to_fp32(0x000F) is : 0x%x ", results[2]); // denormalized number
+  printf("\nfp16_to_fp32(0x0000) is : 0x%x ", results[3]); // positive zero
+  printf("\nfp16_to_fp32(0x8000) is : 0x%x ", results[4]); // negative zero
+  printf("\nfp16_to_fp32(0x7C00) is : 0x%x ", results[5]); // positive inf
+  printf("\nfp16_to_fp32(0xFC00) is : 0x%x ", results[6]); // negative inf
+  printf("\nfp16_to_fp32(0x7CFF) is : 0x%x ", results[7]); // NaN
 }

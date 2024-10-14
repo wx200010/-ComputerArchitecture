@@ -1,40 +1,47 @@
 .data
-    test_1: .word 4
-    test_2: .word 8
-    test_3: .word 0x7FFFFFFF   
-    str1:     .string "\nmySqrt(4) is " 
-    str2:     .string "\nmySqrt(8) is " 
-    str3:     .string "\nmySqrt(0x7FFFFFFF) is "  
+    datas: .word 0, 1, 2, 4, 8, 2147483647
+    ans: .word 0, 1, 1, 2, 2, 46340
+    str1:     .string "\nmySqrt(0) is : " 
+    str2:     .string "\nmySqrt(1) is : " 
+    str3:     .string "\nmySqrt(2) is : " 
+    str4:     .string "\nmySqrt(4) is : " 
+    str5:     .string "\nmySqrt(8) is : " 
+    str6:     .string "\nmySqrt(2147483647) is : " 
+    strError: .string "\nthe answer is wrong!!!"
+    strs:     .word str1, str2, str3, str4, str5, str6
 .text
-main:
-        la a0, str1                
-        li a7, 4
-        ecall
-        lw  a0, test_1           
-        jal ra, mySqrt           # result1 = mySqrt(0x4)      
-        li a7, 1                 # printf("mySqrt(4) is %u", result1);
-        ecall
-        
-        la a0, str2              
-        li a7, 4
-        ecall
-        lw  a0, test_2           
-        jal ra, mySqrt           # result2 = mySqrt(0x8)      
-        li a7, 1                 # printf("mySqrt(8) is %u", result2);
-        ecall
 
-        la a0, str3              
-        li a7, 4
+main:
+        la s6, ans                 # Load ans reference
+        la s7, datas               # Load datas reference
+        la s8, strs                # Load strs references
+        li s9, 6                   # Load the loop count
+print_numbers:
+        lw a0, 0(s8)               # Load string reference
+        li a7, 4                   # print string
         ecall
-        lw  a0, test_3           
-        jal ra, mySqrt           # result3 = mySqrt(0x7FFFFFFF)      
-        li a7, 1                 # printf("mySqrt(0x7FFFFFFF) is %u", result3);
+        lw a0, 0(s7)               # Load data
+        jal ra, mySqrt       # calculate fp16_to_fp32(data)   
+        li, a7, 36                  # print the result in unsigned format
         ecall
-    
+validation:
+        lw t0, 0(s6)               # Load ans
+        sub t0, t0, a0             # calculate ans - result for validation
+        beqz t0, check_loop        # if (ans - result) == 0 then skip
+        la a0, strError
+        li a7, 4                   # print error message!!!
+        ecall
+check_loop:
+        addi s6, s6, 4             # shift ans index
+        addi s7, s7, 4             # shift datas index
+        addi s8, s8, 4             # shift strs index
+        addi s9, s9, -1            # loop count - 1
+        bnez s9, print_numbers
+exit:
         # Exit the program
         li a7, 10                  # System call code for exiting the program
         ecall                      # Make the exit system call
-        
+        ret
 mySqrt:
         # a0 is x
         # t0 is temp
